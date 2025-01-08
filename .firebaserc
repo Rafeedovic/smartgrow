@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "default": "smartgrow-4c523",
+    "smartgrow": "smartgrow-4c523"
+  },
+  "targets": {
+    "smartgrow-4c523": {
+      "hosting": {
+        "smartgrow": [
+          "smartgrow-4c523"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
