@@ -1,0 +1,17 @@
+/* src/app/app.component.css */
+.container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #4CAF50;
+  }
+  
+  h2 {
+    font-size: 1.5em;
+  }
+  
+  p {
+    color: #999;
+  }
