@@ -10,6 +10,9 @@
 <p *ngIf="sensorData?.humidite_time">
   Heure de l'humidité : {{ sensorData.humidite_time | date:'dd/MM/yyyy HH:mm:ss' }}
 </p>
+<p *ngIf="sensorData?.humidite_time">
+  Heure de l'humidité du sol : {{ sensorData.humidite_sol_time | date:'dd/MM/yyyy HH:mm:ss' }}
+</p>
 <p *ngIf="sensorData?.temperature_time">
   Heure de la température : {{ sensorData.temperature_time | date:'dd/MM/yyyy HH:mm:ss' }}
 </p>
