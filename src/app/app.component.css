@@ -1,17 +1,56 @@
 /* src/app/app.component.css */
+body {
+  background: url('../assets/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Lato', 'Normal';
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .container {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  h1 {
-    color: #4CAF50;
-  }
-  
-  h2 {
-    font-size: 1.5em;
-  }
-  
-  p {
-    color: #999;
-  }
+  text-align: left;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.85); /* semi-transparent white */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-radius: 15px;
+  width: 80%;
+  max-width: 1200px;
+}
+
+h1 {
+  color: #333; /* Darker color for better readability */
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sensor-box {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.sensor-data, .sensor-timestamps {
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sensor-data p, .sensor-timestamps p {
+  color: #333;
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.sensor-data span, .sensor-timestamps span {
+  font-weight: bold;
+  color: #4CAF50; /* Color to match the heading */
+}

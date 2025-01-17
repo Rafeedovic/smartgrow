@@ -1,21 +1,28 @@
-<h1>SmartGrow - Surveillance des Capteurs</h1>
-
-<!-- Affichage des données de capteurs avec des unités -->
-<p *ngIf="sensorData?.humidite">Humidité : {{ sensorData.humidite }} %</p>
-<p *ngIf="sensorData?.humidite_sol">Humidité du sol : {{ sensorData.humidite_sol }} %</p>
-<p *ngIf="sensorData?.temperature">Température : {{ sensorData.temperature }} °C</p>
-<p *ngIf="sensorData?.luminosite">Luminosité : {{ sensorData.luminosite }} Lux</p>
-
-<!-- Affichage des horaires de mise à jour des données avec un format lisible -->
-<p *ngIf="sensorData?.humidite_time">
-  Heure de l'humidité : {{ sensorData.humidite_time | date:'dd/MM/yyyy HH:mm:ss' }}
-</p>
-<p *ngIf="sensorData?.humidite_time">
-  Heure de l'humidité du sol : {{ sensorData.humidite_sol_time | date:'dd/MM/yyyy HH:mm:ss' }}
-</p>
-<p *ngIf="sensorData?.temperature_time">
-  Heure de la température : {{ sensorData.temperature_time | date:'dd/MM/yyyy HH:mm:ss' }}
-</p>
-<p *ngIf="sensorData?.luminosite_time">
-  Heure de la luminosité : {{ sensorData.luminosite_time | date:'dd/MM/yyyy HH:mm:ss' }}
-</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartGrow - Surveillance des Capteurs</title>
+  <link rel="stylesheet" href="app.component.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SmartGrow - Surveillance des Capteurs</h1>
+    <div class="sensor-box">
+      <div class="sensor-data">
+        <p *ngIf="sensorData?.humidite">Humidité : <span>{{ sensorData.humidite }} %</span></p>
+        <p *ngIf="sensorData?.humidite_sol">Humidité du sol : <span>{{ sensorData.humidite_sol }} %</span></p>
+        <p *ngIf="sensorData?.temperature">Température : <span>{{ sensorData.temperature }} °C</span></p>
+        <p *ngIf="sensorData?.luminosite !== null && sensorData?.luminosite !== undefined">Luminosité : <span>{{ sensorData.luminosite }} Lux</span></p>
+      </div>
+      <div class="sensor-timestamps">
+        <p *ngIf="sensorData?.humidite_time">Heure de l'humidité : <span>{{ sensorData.humidite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+        <p *ngIf="sensorData?.humidite_sol_time">Heure de l'humidité du sol : <span>{{ sensorData.humidite_sol_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+        <p *ngIf="sensorData?.temperature_time">Heure de la température : <span>{{ sensorData.temperature_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+        <p *ngIf="sensorData?.luminosite_time">Heure de la luminosité : <span>{{ sensorData.luminosite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
