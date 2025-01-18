@@ -15,12 +15,14 @@
         <p *ngIf="sensorData?.humidite_sol">Humidité du sol : <span>{{ sensorData.humidite_sol }} %</span></p>
         <p *ngIf="sensorData?.temperature">Température : <span>{{ sensorData.temperature }} °C</span></p>
         <p *ngIf="sensorData?.luminosite !== null && sensorData?.luminosite !== undefined">Luminosité : <span>{{ sensorData.luminosite }} Lux</span></p>
+        <p *ngIf="sensorData?.lampes_allumees">Lampes allumées : <span>{{ sensorData.lampes_allumees }}</span></p>
       </div>
       <div class="sensor-timestamps">
         <p *ngIf="sensorData?.humidite_time">Heure de l'humidité : <span>{{ sensorData.humidite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.humidite_sol_time">Heure de l'humidité du sol : <span>{{ sensorData.humidite_sol_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.temperature_time">Heure de la température : <span>{{ sensorData.temperature_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.luminosite_time">Heure de la luminosité : <span>{{ sensorData.luminosite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+        <p *ngIf="sensorData?.allumage_lampes_time">Heure de l'etat des lampes : <span>{{ sensorData.allumage_lampes_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
       </div>
     </div>
   </div>

@@ -23,6 +23,8 @@ FirebaseConfig config;
 #define DHTPIN 26      // GPIO26 pour le DHT11
 #define DHTTYPE DHT11  // Type de capteur DHT11
 #define SOILPIN 4      // GPIO4 (D2) pour le capteur d'humidité du sol
+#define LED_PIN 2      // LED pin
+#define FAN_PIN 5  // Define the GPIO pin for the fan
 
 DHT dht(DHTPIN, DHTTYPE); // Initialisation du capteur DHT11
 
@@ -87,6 +89,59 @@ float readLight() {
   return luminosite;
 }
 
+void controlLEDandUpdateFirebase(float light,String timestamp) {
+    bool isLEDOn = false;
+
+    if (isnan(light)) {
+        Serial.println("Erreur de lecture de la luminosité !");
+    } else {
+        Serial.print("Luminosité actuelle: ");
+        Serial.println(light);
+
+        if (light < 2) {
+            digitalWrite(LED_PIN, HIGH);  // Turn on the LED if light is below 5 lux
+            Serial.println("LED allumée en raison de la faible luminosité.");
+            isLEDOn = true;
+        } else {
+            digitalWrite(LED_PIN, LOW);  // Turn off the LED otherwise
+            Serial.println("LED éteinte.");
+        }
+    }
+
+    // Update Firebase with the LED status
+    if (Firebase.RTDB.setBool(&fbdo, "/lampes_allumees", isLEDOn)) {
+        Firebase.RTDB.setString(&fbdo, "/allumage_lampes_time", timestamp);
+        }else{
+        Serial.print("Failed to update Firebase with LED status: ");
+        Serial.println(fbdo.errorReason());
+    }
+}
+
+void controlFanAndUpdateFirebase(float temperature,String timestamp) {
+    bool isFanOn = false;
+
+    Serial.print("Température actuelle: ");
+    Serial.println(temperature);
+
+    if (temperature > 25) {  // Assuming the fan should turn on above 25 degrees Celsius
+        digitalWrite(FAN_PIN, HIGH);  // Turn on the fan
+        Serial.println("Ventilateur allumé en raison de la température élevée.");
+        isFanOn = true;
+    } else {
+        digitalWrite(FAN_PIN, LOW);  // Turn off the fan
+        Serial.println("Ventilateur éteint.");
+    }
+
+    // Update Firebase with the fan status
+    if (Firebase.RTDB.setBool(&fbdo, "/ventilateur_allume", isFanOn)) {
+        Firebase.RTDB.setString(&fbdo, "/allumage_lampes_time", timestamp);
+    } else {
+        Serial.println("Firebase updated with fan status successfully.");
+        Serial.println(fbdo.errorReason());
+    }
+}
+
+
 void tokenStatusCallback(TokenInfo info) {
   Serial.print("Token Info: type = ");
   Serial.println(info.type);
@@ -100,6 +155,9 @@ void setup() {
   Serial.begin(9600);
   dht.begin(); // Initialiser le capteur DHT
   pinMode(SOILPIN, INPUT); // Configurer la broche du capteur d'humidité du sol en entrée
+  pinMode(LED_PIN, OUTPUT);  // Set the LED pin as an output
+  pinMode(FAN_PIN, OUTPUT);  // Set the fan pin as an output
+
   
   // Initialisation du capteur VEML7700
   Wire.begin();
@@ -151,6 +209,7 @@ void loop() {
         Firebase.RTDB.setString(&fbdo, "/temperature_time", timestamp);
         Serial.print("Température envoyée : ");
         Serial.println(temperature);
+        controlFanAndUpdateFirebase(temperature,timestamp);
       } else {
         Serial.print("Erreur d'envoi température : ");
         Serial.println(fbdo.errorReason());
@@ -193,5 +252,6 @@ void loop() {
         Serial.println(fbdo.errorReason());
       }
     }
+    controlLEDandUpdateFirebase(light,timestamp);
   }
 }
