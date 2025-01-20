@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartGrow - Surveillance des Capteurs</title>
+  <title>SmartGrow</title>
   <link rel="stylesheet" href="app.component.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
   <div class="container">
-    <h1>SmartGrow - Surveillance des Capteurs</h1>
+    <h1>SmartGrow - Contrôller à distance votre ferme intelligente</h1>
     <div class="sensor-box">
       <div class="sensor-data">
         <p *ngIf="sensorData?.temperature">Température : <span>{{ sensorData.temperature }} °C</span></p>
@@ -90,6 +91,7 @@
       <div class="sensor-button">
         <br>
         <p *ngIf="sensorData?.alterte_buzzer == true" > Alerte : Remplir la citerne d'eau </p>
+        <a href="tel:+0612345678" class="phone-icon"><i class="fas fa-phone"></i></a>
       </div>
     </div>
   </div>

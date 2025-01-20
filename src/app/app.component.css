@@ -130,3 +130,14 @@ input:checked + .slider:before {
   font-size: 16px; /* Set font size */
   color: #333; /* Set text color */
 }
+
+.phone-icon {
+  color: green; /* Example color */
+  font-size: 24px; /* Adjust size as needed */
+  margin-left: 10px; /* Spacing between text and icon */
+  cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+}
+
+.phone-icon:hover {
+  color: darkgreen; /* Slight color change on hover for feedback */
+}
