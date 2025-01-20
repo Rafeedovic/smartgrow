@@ -20,7 +20,7 @@
         <p *ngIf="sensorData?.humidite_time">Date humidité : <span>{{ sensorData.humidite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.ventilateur_allume_time">Date ventilos : <span>{{ sensorData.ventilateur_allume_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
       </div>
-      <div class="sensor-data">
+      <div class="sensor-button">
         <!-- Toggle switch for ventilos -->
         <br>
         <br>
@@ -38,9 +38,8 @@
         <p *ngIf="sensorData?.humidite_sol_time">Date humidité du sol : <span>{{ sensorData.humidite_sol_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.irrigation_active_time !== null && sensorData?.irrigation_active_time !== undefined">Date irrigation : <span>{{ sensorData.irrigation_active_time | date:'dd/MM/yyyy HH:mm:ss'}} </span></p>
       </div>
-      <div class="sensor-data">
+      <div class="sensor-button">
         <br>
-        
         <!-- Toggle switch for irrigation -->
         <label class="switch-label">Activer l'irrigation</label>
         <label class="switch">
@@ -56,7 +55,7 @@
         <p *ngIf="sensorData?.luminosite_time">Date luminosité : <span>{{ sensorData.luminosite_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
         <p *ngIf="sensorData?.allumage_lampes_time">Date etats lampes : <span>{{ sensorData.allumage_lampes_time | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
       </div>
-      <div class="sensor-data">
+      <div class="sensor-button">
         <!-- Toggle switch for lamps -->
         <br>
         <label class="switch-label">Allumage Lampes</label>
@@ -71,7 +70,7 @@
       <div class="sensor-timestamps">
         <p *ngIf="sensorData?.porte_ouverte_time !== null && sensorData?.porte_ouverte_time !== undefined">Date o/f porte : <span>{{ sensorData.porte_ouverte_time | date:'dd/MM/yyyy HH:mm:ss'}} </span></p>
       </div>
-      <div class="sensor-data">
+      <div class="sensor-button">
         <!-- Toggle switch for lamps -->
         <br>
         <label class="switch-label">Ouvrir/Fermer la porte de grange</label>
@@ -88,7 +87,7 @@
         <p *ngIf="sensorData?.niveau_eau_time !== null && sensorData?.niveau_eau_time !== undefined">Date niveau eau : <span>{{ sensorData.niveau_eau_time | date:'dd/MM/yyyy HH:mm:ss'}} </span></p>
         <p *ngIf="sensorData?.alerte_buzzer_time !== null && sensorData?.alerte_buzzer_time !== undefined">Date alerte eau : <span>{{ sensorData.alerte_buzzer_time | date:'dd/MM/yyyy HH:mm:ss'}} </span></p>
       </div>
-      <div class="sensor-data">
+      <div class="sensor-button">
         <br>
         <p *ngIf="sensorData?.alterte_buzzer == true" > Alerte : Remplir la citerne d'eau </p>
       </div>
