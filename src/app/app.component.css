@@ -1,27 +1,80 @@
 /* src/app/app.component.css */
+
+@media (max-width: 768px) {
+  .sensor-box, .sensor-data, .toggle-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sensor-data {
+    width: 100%; 
+  }
+
+  html,body {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    background-image: url('../assets/background.jpg'); /* Optional: different image for smaller screens */
+    background-size: contain; /* Change size to contain for smaller screens if cover cuts off important parts */
+  }
+
+  .h1 {
+    font-size: 24px;  
+  }
+
+  .phone-icon {
+    font-size: 24px; 
+  }
+
+  .toggle-container input[type="checkbox"] {
+    transform: scale(1.5);  
+  }
+
+}
+
+html {
+  margin:0;
+  padding: 2 !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+
 body {
   background: url('../assets/background.jpg') no-repeat center center fixed;
-  background-size: cover;
+  background-size: cover; /* Cover the entire viewport */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  min-height: 100vh; /* Minimum height of the viewport */
+  min-width: 100vw;
   font-family: 'Lato', 'Normal';
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin:0;
+  /* overflow-x: hidden !important;
+  overflow-y: hidden !important; */
+}
+
+* {
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
 }
 
 .container {
   text-align: left;
-  padding: 40px;
+  padding: 15px;
   background-color: rgba(255, 255, 255, 0.85); /* semi-transparent white */
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   border-radius: 15px;
-  width: 80%;
-  max-width: 1200px;
+  width: 90%;
+  height : 80%;
+  max-width: 1400px;
+  margin: 0;
 }
+
+
 
 h1 {
   color: #333; /* Darker color for better readability */

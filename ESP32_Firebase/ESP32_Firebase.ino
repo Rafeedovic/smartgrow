@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Adafruit_VEML7700.h>
 #include <time.h> // Pour récupérer l'heure via NTP
+#include <ESP32Servo.h>
 
 // Définir les informations Wi-Fi
 #define WIFI_SSID "Rafed"
@@ -18,13 +19,18 @@
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
+Servo myServo;
 
 // Définir les broches pour les capteurs
 #define DHTPIN 26      // GPIO26 pour le DHT11
 #define DHTTYPE DHT11  // Type de capteur DHT11
 #define SOILPIN 4      // GPIO4 (D2) pour le capteur d'humidité du sol
 #define LED_PIN 2      // LED pin
-#define FAN_PIN 5  // Define the GPIO pin for the fan
+#define FAN_PIN 25  // Define the GPIO pin for the fan
+#define WATER_LEVEL_PIN 35  // GPIO pour le capteur de niveau d'eau (analogique)
+#define BUZZER_PIN 19  // GPIO utilisée pour le buzzer
+#define SERVO_PIN 18
+#define PUMP_PIN 26 // Pompe connectée à GPIO 26
 
 DHT dht(DHTPIN, DHTTYPE); // Initialisation du capteur DHT11
 
@@ -52,6 +58,14 @@ String getCurrentTime() {
   return String(buffer);
 }
 
+// Fonction pour lire le niveau d'eau
+int readWaterLevel() {
+  int waterLevel = analogRead(WATER_LEVEL_PIN); // Lecture de la valeur analogique
+  int percentage = map(waterLevel, 0, 4095, 0, 100); // Conversion en pourcentage
+  if (percentage < 0) percentage = 0; // Ajuster les valeurs négatives
+  if (percentage > 100) percentage = 100; // Ajuster les valeurs au-dessus de 100%
+  return percentage;
+}
 // Fonction pour lire la température
 float readTemperature() {
   float temp = dht.readTemperature();
@@ -89,33 +103,68 @@ float readLight() {
   return luminosite;
 }
 
-void controlLEDandUpdateFirebase(float light,String timestamp) {
+void controlLEDandUpdateFirebase(float light, String timestamp) {
     bool isLEDOn = false;
 
-    if (isnan(light)) {
-        Serial.println("Erreur de lecture de la luminosité !");
+    // Lire la valeur depuis Firebase pour vérifier si l'utilisateur veut forcer l'allumage de la LED
+    bool forceLEDOn = false;
+    if (Firebase.RTDB.getBool(&fbdo, "/force_LED_on")) {
+        forceLEDOn = fbdo.boolData();
+        Serial.print("Valeur Firebase force_LED_on : ");
+        Serial.println(forceLEDOn ? "true" : "false");
     } else {
-        Serial.print("Luminosité actuelle: ");
-        Serial.println(light);
+        Serial.print("Erreur lors de la lecture de force_LED_on : ");
+        Serial.println(fbdo.errorReason());
+    }
 
-        if (light < 2) {
-            digitalWrite(LED_PIN, HIGH);  // Turn on the LED if light is below 5 lux
-            Serial.println("LED allumée en raison de la faible luminosité.");
-            isLEDOn = true;
+    if (forceLEDOn) {
+        // Allumer la LED si la valeur Firebase est true
+        digitalWrite(LED_PIN, HIGH);
+        Serial.println("LED allumée par commande Firebase.");
+        isLEDOn = true;
+    } else {
+        // Contrôle basé sur la luminosité
+        if (isnan(light)) {
+            Serial.println("Erreur de lecture de la luminosité !");
         } else {
-            digitalWrite(LED_PIN, LOW);  // Turn off the LED otherwise
-            Serial.println("LED éteinte.");
+            Serial.print("Luminosité actuelle: ");
+            Serial.println(light);
+
+            if (light < 2) {
+                digitalWrite(LED_PIN, HIGH);  // Allumer la LED si la luminosité est inférieure à 2 lux
+                Serial.println("LED allumée en raison de la faible luminosité.");
+                isLEDOn = true;
+            } else {
+                digitalWrite(LED_PIN, LOW);  // Éteindre la LED sinon
+                Serial.println("LED éteinte.");
+            }
         }
     }
 
-    // Update Firebase with the LED status
+    // Mettre à jour Firebase avec l'état actuel de la LED
     if (Firebase.RTDB.setBool(&fbdo, "/lampes_allumees", isLEDOn)) {
         Firebase.RTDB.setString(&fbdo, "/allumage_lampes_time", timestamp);
-        }else{
-        Serial.print("Failed to update Firebase with LED status: ");
+    } else {
+        Serial.print("Erreur de mise à jour Firebase pour l'état de la LED : ");
         Serial.println(fbdo.errorReason());
     }
 }
+
+void alertLowWaterLevel() {
+    // Activer le buzzer
+    digitalWrite(BUZZER_PIN, HIGH);
+    
+    // Mettre à jour Firebase pour indiquer que le buzzer a été activé
+    if (Firebase.RTDB.setBool(&fbdo, "/alerte_buzzer", true)) {
+        Serial.println("Firebase mis à jour : alerte_buzzer = true");
+    } else {
+        Serial.print("Erreur lors de la mise à jour de alerte_buzzer : ");
+        Serial.println(fbdo.errorReason());
+    }
+
+    delay(500);  // Maintenir pendant 50 ms
+}
+
 
 void controlFanAndUpdateFirebase(float temperature,String timestamp) {
     bool isFanOn = false;
@@ -123,7 +172,7 @@ void controlFanAndUpdateFirebase(float temperature,String timestamp) {
     Serial.print("Température actuelle: ");
     Serial.println(temperature);
 
-    if (temperature > 25) {  // Assuming the fan should turn on above 25 degrees Celsius
+    if (temperature > 13) {  // Assuming the fan should turn on above X degrees Celsius
         digitalWrite(FAN_PIN, HIGH);  // Turn on the fan
         Serial.println("Ventilateur allumé en raison de la température élevée.");
         isFanOn = true;
@@ -157,8 +206,12 @@ void setup() {
   pinMode(SOILPIN, INPUT); // Configurer la broche du capteur d'humidité du sol en entrée
   pinMode(LED_PIN, OUTPUT);  // Set the LED pin as an output
   pinMode(FAN_PIN, OUTPUT);  // Set the fan pin as an output
+  pinMode(BUZZER_PIN, OUTPUT);  // Configure le buzzer comme sortie
+  digitalWrite(BUZZER_PIN, LOW); // Assurez-vous que le buzzer est désactivé au démarrage
 
-  
+  myServo.attach(SERVO_PIN);
+  myServo.write(0);  // Position initiale fermée
+
   // Initialisation du capteur VEML7700
   Wire.begin();
   if (!veml7700.begin()) {
@@ -196,7 +249,7 @@ void setup() {
 }
 
 void loop() {
-  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)) {
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)) {
     sendDataPrevMillis = millis();
 
     // Récupérer la date et l'heure
@@ -231,6 +284,15 @@ void loop() {
 
     // Lire l'humidité du sol
     int soilHumidity = readSoilHumidity();
+
+     if (soilHumidity < 50) {
+      digitalWrite(PUMP_PIN, HIGH); // Allumer la pompe
+      Serial.println("Pompe activée pour irrigation.");
+    } else {
+      digitalWrite(PUMP_PIN, LOW); // Éteindre la pompe
+      Serial.println("Pompe désactivée. Humidité suffisante.");
+    }
+
     if (Firebase.RTDB.setInt(&fbdo, "/humidite_sol", soilHumidity)) {
       Firebase.RTDB.setString(&fbdo, "/humidite_sol_time", timestamp);
       Serial.print("Humidité du sol envoyée : ");
@@ -253,5 +315,52 @@ void loop() {
       }
     }
     controlLEDandUpdateFirebase(light,timestamp);
-  }
+
+    int waterLevel = readWaterLevel();
+    if (Firebase.RTDB.setFloat(&fbdo, "/niveau_eau", ((float)waterLevel))) {
+      Firebase.RTDB.setString(&fbdo, "/niveau_eau_time", timestamp);
+      Serial.print("Niveau d'eau envoyé : ");
+      Serial.print((float)waterLevel);
+      Serial.println("%");
+      // Vérifier le niveau d'eau et activer le buzzer si nécessaire
+      if ((float)waterLevel < 30) {
+          Serial.println("Niveau d'eau bas ! Activation du buzzer...");
+          alertLowWaterLevel();
+    } else {
+      Serial.println("Niveau d'eau bon");
+      // Désactiver le buzzer
+      digitalWrite(BUZZER_PIN, LOW);
+
+      // Mettre à jour Firebase pour indiquer que le buzzer a été activé
+      if (Firebase.RTDB.setBool(&fbdo, "/alerte_buzzer", false)) {
+          Serial.println("Firebase mis à jour : alerte_buzzer = false");
+      } else {
+          Serial.print("Erreur lors de la mise à jour de alerte_buzzer : ");
+          Serial.println(fbdo.errorReason());
+      }
+    }
+    }else {
+      Serial.print("Erreur d'envoi niveau d'eau : ");
+      Serial.println(fbdo.errorReason());
+    }
+
+    // Lire la valeur de porte_ouverte depuis Firebase
+    if (Firebase.RTDB.getBool(&fbdo, "/porte_ouverte")) {
+      bool porteOuverte = fbdo.boolData();
+      Serial.print("État de la porte : ");
+      Serial.println(porteOuverte ? "Ouverte" : "Fermée");
+
+      // Contrôle du servomoteur
+      if (porteOuverte) {
+        myServo.write(90);  // Ouvrir la porte
+        Serial.println("Servomoteur réglé à 90° : Porte ouverte.");
+      } else {
+        myServo.write(0);   // Fermer la porte
+        Serial.println("Servomoteur réglé à 0° : Porte fermée.");
+      }
+    } else {
+      Serial.print("Erreur lors de la lecture de porte_ouverte : ");
+      Serial.println(fbdo.errorReason());
+    }
+}
 }

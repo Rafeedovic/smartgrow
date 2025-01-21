@@ -32,8 +32,8 @@ export class AppComponent implements OnInit {
   toggleLamps(): void {
     const currentTime = new Date().toISOString(); // ISO string for the timestamp
     const updates = {
-      '/lampes_allumees': this.lampStatus,
-      '/allumage_lampes_time': currentTime // Update the timestamp
+      '/force_LED_on': this.lampStatus,
+      // '/allumage_lampes_time': currentTime // Update the timestamp
     };
   
     this.db.object('/').update(updates) // Updating at the root of the database path

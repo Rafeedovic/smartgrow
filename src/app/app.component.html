@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="margin:0">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,7 +82,7 @@
       </div>
       <div class="sensor-data">
         <p *ngIf="sensorData?.niveau_eau !== null && sensorData?.niveau_eau !== undefined">Niveau eau : <span>{{ sensorData.niveau_eau }} </span></p>
-        <p *ngIf="sensorData?.alterte_buzzer !== null && sensorData?.alterte_buzzer !== undefined">Alerte eau : <span>{{ sensorData.alterte_buzzer }} </span></p>
+        <p *ngIf="sensorData?.alerte_buzzer !== undefined">Alerte eau : <span>{{ sensorData.alerte_buzzer }} </span></p>
       </div>
       <div class="sensor-timestamps">
         <p *ngIf="sensorData?.niveau_eau_time !== null && sensorData?.niveau_eau_time !== undefined">Date niveau eau : <span>{{ sensorData.niveau_eau_time | date:'dd/MM/yyyy HH:mm:ss'}} </span></p>
@@ -90,8 +90,8 @@
       </div>
       <div class="sensor-button">
         <br>
-        <p *ngIf="sensorData?.alterte_buzzer == true" > Alerte : Remplir la citerne d'eau </p>
-        <a href="tel:+0612345678" class="phone-icon"><i class="fas fa-phone"></i></a>
+        <p *ngIf="sensorData?.alerte_buzzer == true" > Alerte : Remplir la citerne d'eau </p>
+        <a *ngIf="sensorData?.alerte_buzzer == true" href="tel:+0612345678" class="phone-icon"><i class="fas fa-phone"></i></a>
       </div>
     </div>
   </div>
